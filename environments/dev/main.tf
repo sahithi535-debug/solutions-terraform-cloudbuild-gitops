@@ -17,24 +17,32 @@ locals {
   "env" = "dev"
 }
 
-provider "google" {
-  project = "${var.project}"
-}
-
-module "vpc" {
-  source  = "../../modules/vpc"
-  project = "${var.project}"
-  env     = "${local.env}"
-}
-
-module "http_server" {
-  source  = "../../modules/http_server"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
-}
-
-module "firewall" {
-  source  = "../../modules/firewall"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
-}
+resource "google_composer_environment" "composer" {
+  name = "composerterrascript"
+  region = "us-central1"
+   config {
+   node_count = 4
+   node_config {
+    zone = "us-central1-a"
+   machine_type = "n1-standard-1"
+ }
+ }
+ }
+ resource "google_service_account" "myaccount" {
+  account_id = "serviceaccountterra"
+  display_name =  "sevice account"
+ }
+ resource "google_bigquery_dataset" "dataset" {
+    dataset_id = "datasetterra"
+    location = "us"
+ }
+ resource "google_data_fusion_instance" "instance123" {
+  name = "instanceterra"
+  region = "us-central1"
+  type = "BASIC"
+  provider= google-beta
+ }
+ resource "google_storage_bucket" "bucket123" {
+  name = "bucketterra"
+  location ="us"
+ }
